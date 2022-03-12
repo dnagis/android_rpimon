@@ -57,8 +57,9 @@ public class P2pBroadcastReceiver extends BroadcastReceiver {
 
 			if (wifiP2pInfo.groupFormed) {
 				Log.d(RPiMonActivity.TAG, "wifip2pinfo.groupFormed = true");
-				activity.txt_conn.setTextColor(Color.BLUE);				
-			} else { //
+				activity.txt_conn.setTextColor(Color.BLUE);
+				activity.rxGroupFormed();				
+			} else {
 				Log.d(RPiMonActivity.TAG, "wifip2pinfo.groupFormed = false");
 				activity.txt_conn.setTextColor(Color.LTGRAY);	
 				}

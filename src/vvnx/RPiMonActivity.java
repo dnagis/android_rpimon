@@ -84,14 +84,7 @@ public class RPiMonActivity extends Activity implements PeerListListener {
 		final SurfaceHolder surfaceHolder = surfaceView.getHolder();
 		surfaceHolder.addCallback(new SurfCallBack());
 		
-		try {
-		mediaPlayer.setDataSource(this, Uri.parse("rtsp://192.168.49.1:8554/test"));
-		mediaPlayer.prepare();		
-		mediaPlayer.start();		
-		} catch (Exception e) {
-		Log.e(TAG, "initialize Player Exception");
-		e.printStackTrace();
-		}
+
         
     }
     
@@ -156,6 +149,17 @@ public class RPiMonActivity extends Activity implements PeerListListener {
 		}   
     }
     
+    public void rxGroupFormed() {
+		//Log.d(TAG, "rxGroupFormed dans Main Activity");
+		try {
+		mediaPlayer.setDataSource(this, Uri.parse("rtsp://192.168.49.1:8554/test"));
+		mediaPlayer.prepare();		
+		mediaPlayer.start();		
+		} catch (Exception e) {
+		Log.e(TAG, "initialize Player Exception");
+		e.printStackTrace();
+		}
+	}
     
     //bouton pour tests envoi message sur Socket, Rx avec #socat TCP-LISTEN:5778,fork -
     public void ActionPressBouton_1(View v) {
