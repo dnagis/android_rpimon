@@ -161,24 +161,35 @@ public class RPiMonActivity extends Activity implements PeerListListener {
 		}
 	}
     
-    //bouton pour tests envoi message sur Socket, Rx avec #socat TCP-LISTEN:5778,fork -
+    
     public void ActionPressBouton_1(View v) {
-		Log.d(TAG, "press bouton");
+		sendMsg("start");	
+	}
+	
+	public void ActionPressBouton_2(View v) {
+		sendMsg("stop");	
+	}
+	
+	
+	//envoi message sur Socket, Rx avec #socat TCP-LISTEN:5778,fork -
+	public void sendMsg(String msg) {
+		Log.d(TAG, "sendMsg:"+msg);
 		//Thread sinon android.os.NetworkOnMainThreadException
 		new Thread(new Runnable(){
 		@Override
 			public void run() {	        
 				try {
-			Socket socket = new Socket("192.168.49.1", 5778);
+			Socket socket = new Socket("192.168.49.1", 4696);
 	        PrintWriter writer = new PrintWriter(socket.getOutputStream(), true);
-	        writer.println("mon message");
+	        writer.println(msg);
 	        socket.close(); //sinon accumulation de connexions peut poser pb socat (address already in use) mais aux tests mainly
 				} catch (IOException e) {
                     Log.d(TAG, "erreur send socket :" + e.getMessage());
                 } 
             }
-		}).start();	
+		}).start();
 	}
+	
 	
 	private class SurfCallBack implements SurfaceHolder.Callback {
     @Override

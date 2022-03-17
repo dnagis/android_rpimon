@@ -4,14 +4,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     
-     <Button
-     android:id="@+id/btn_1"
-     android:layout_height="wrap_content"
-     android:layout_width="wrap_content"
-     android:textSize="23sp"
-     android:text="@string/txt_btn_1"
-     android:onClick="ActionPressBouton_1"
-     />
      
     <TextView 
 	android:id="@+id/txt_conn"	
@@ -28,8 +20,30 @@
     android:id="@+id/video_surfaceview"
     android:layout_width="fill_parent"
     android:layout_height="300dp"
-    android:layout_below="@+id/btn_1"
+    android:layout_below="@+id/txt_conn"
     />
+    
+     <Button
+     android:id="@+id/btn_1"
+     android:layout_height="wrap_content"
+     android:layout_width="wrap_content"
+     android:layout_alignParentBottom="true"
+     android:layout_alignParentLeft="true"
+     android:textSize="23sp"
+     android:text="@string/txt_btn_1"
+     android:onClick="ActionPressBouton_1"
+     />
+     
+     <Button
+     android:id="@+id/btn_2"
+     android:layout_height="wrap_content"
+     android:layout_width="wrap_content"
+     android:layout_alignParentBottom="true"
+     android:layout_alignParentRight="true"
+     android:textSize="23sp"
+     android:text="@string/txt_btn_2"
+     android:onClick="ActionPressBouton_2"
+     />
      
 
 
