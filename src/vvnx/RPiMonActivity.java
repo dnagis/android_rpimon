@@ -3,6 +3,11 @@ adb uninstall vvnx.rpimon && \
 adb install out/target/product/generic_arm64/system/app/RPiMon/RPiMon.apk && \
 adb shell pm grant vvnx.rpimon android.permission.ACCESS_FINE_LOCATION
  * 
+ * #stream servi en rtsp
+ * test-launch "( rpicamsrc bitrate=2000000 keyframe-interval=15 ! video/x-h264,framerate=15/1,width=640,height=480 ! h264parse ! rtph264pay name=pay0 pt=96 )" &
+ * 
+ * #listen sur un port avec socat
+ * socat TCP-LISTEN:4696,fork EXEC:/root/myscript.sh & 
  * 
  * */
 
@@ -171,7 +176,7 @@ public class RPiMonActivity extends Activity implements PeerListListener {
 	}
 	
 	
-	//envoi message sur Socket, Rx avec #socat TCP-LISTEN:5778,fork -
+	//envoi message sur Socket
 	public void sendMsg(String msg) {
 		Log.d(TAG, "sendMsg:"+msg);
 		//Thread sinon android.os.NetworkOnMainThreadException
