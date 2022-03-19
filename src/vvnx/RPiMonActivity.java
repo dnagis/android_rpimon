@@ -9,6 +9,23 @@ adb shell pm grant vvnx.rpimon android.permission.ACCESS_FINE_LOCATION
  * #listen sur un port avec socat
  * socat TCP-LISTEN:4696,fork EXEC:/root/myscript.sh & 
  * 
+ * #myscript.sh
+ * #!/bin/sh
+
+STDIN=$(cat) #Recuperation du message envoye par l emetteur
+
+case "$STDIN" in
+ start)
+    kill `pidof test-launch`
+    gst-launch-1.0 -e rpicamsrc bitrate=1000000 ! h264parse ! mp4mux ! filesink location=capture.mp4
+    ;;
+ stop)
+    kill -s SIGINT `pidof gst-launch-1.0`
+    ;;  
+ *)
+esac
+
+ * 
  * */
 
 package vvnx.rpimon;
