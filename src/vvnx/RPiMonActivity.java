@@ -17,7 +17,7 @@ STDIN=$(cat) #Recuperation du message envoye par l emetteur
 case "$STDIN" in
  start)
     kill `pidof test-launch`
-    gst-launch-1.0 -e rpicamsrc bitrate=1000000 ! h264parse ! mp4mux ! filesink location=capture.mp4
+    gst-launch-1.0 -e rpicamsrc bitrate=1000000 ! h264parse ! mp4mux ! filesink location=/root/capture.mp4
     ;;
  stop)
     kill -s SIGINT `pidof gst-launch-1.0`
