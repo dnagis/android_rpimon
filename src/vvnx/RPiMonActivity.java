@@ -146,29 +146,38 @@ public class RPiMonActivity extends Activity implements PeerListListener {
         //sans android.permission.ACCESS_FINE_LOCATION au runtime (pas manifest only), la WifiP2pDeviceList est vide
         //Log.d(TAG, "onPeersAvailable dans P2P_wifi activity et la liste = " + peerList.toString());//plusieurs infos pas seulement MACADDR
         
-        //WifiP2pDevice monPeerDevice = peerList.get("98:af:65:ce:18:6f"); //NUC10i7 principal
-        WifiP2pDevice monPeerDevice = peerList.get("ba:27:eb:92:fc:8f"); //zero
-        
-        if (monPeerDevice != null && monPeerDevice.status == 3) { //le check du status m'évite de passer 200x/s ici (et donc dans manager.connect()
-			Log.d(TAG, "WifiP2pDevice n'est pas null, son status=" + monPeerDevice.status); //au départ: 3
-
+        /**
+         * Au début je récupérais par mac addr, et il fallait que je vérifie si null ET le status:
+         * WifiP2pDevice monPeerDevice = peerList.get("ba:27:eb:92:fc:8f"); //zero
+         * if (monPeerDevice != null && monPeerDevice.status == 3) { //sans check du status je passe 200x/s ici (et donc dans manager.connect()) et ça fait planter connexion
+         * 
+         * Depuis mars 2022 je cherche le peer par deviceName dans la WifiP2pDeviceList que j'iterate avec getDeviceList().
+         * Pour attribuer le name côté linux c'est: wpa_supplicant.conf: syntaxe: device_name=Zero
+         * 
+         * */
+		
+        for (WifiP2pDevice monPeerDevice : peerList.getDeviceList()) {			
+			//Log.d(TAG, "name:" + monPeerDevice.deviceName);
+			
+			if (monPeerDevice.deviceName.equals("Zero")) {
 			config = new WifiP2pConfig();
 			config.deviceAddress = monPeerDevice.deviceAddress;
 			config.wps.setup = WpsInfo.PBC;
-			manager.connect(channel, config, new ActionListener() {
-	            @Override
-	            public void onSuccess() { //pas informatif sur le statut de la connexion
-					//Log.d(TAG, "connect() --> onSuccess");
-	                //Toast.makeText(P2P_wifi.this, "connect() --> onSuccess", Toast.LENGTH_SHORT).show();
-	            }
-	
-	            @Override
-	            public void onFailure(int reason) { //pas informatif sur le statut de la connexion
-					//Log.d(TAG, "connect() --> onFailure, reason: " + reason);
-					//Toast.makeText(P2P_wifi.this, "connect() --> onFailure, reason: " + reason, Toast.LENGTH_SHORT).show();
-	            }
-			});
-		}   
+				manager.connect(channel, config, new ActionListener() {
+		            @Override
+		            public void onSuccess() { //pas informatif sur le statut de la connexion
+						//Log.d(TAG, "connect() --> onSuccess");
+		                //Toast.makeText(P2P_wifi.this, "connect() --> onSuccess", Toast.LENGTH_SHORT).show();
+		            }
+		
+		            @Override
+		            public void onFailure(int reason) { //pas informatif sur le statut de la connexion
+						//Log.d(TAG, "connect() --> onFailure, reason: " + reason);
+						//Toast.makeText(P2P_wifi.this, "connect() --> onFailure, reason: " + reason, Toast.LENGTH_SHORT).show();
+		            }
+				});	
+			}
+		}  
     }
     
     public void rxGroupFormed() {
