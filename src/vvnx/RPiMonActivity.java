@@ -25,6 +25,7 @@ case "$STDIN" in
     kill -s SIGINT `pidof gst-launch-1.0`
     ;;  
  *)
+    echo $STDIN >> /root/LOG_Rx
 esac
 
  * 
