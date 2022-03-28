@@ -40,6 +40,7 @@ import android.view.WindowManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.graphics.Color;
 
 import android.media.MediaPlayer;
 import android.view.SurfaceView;
@@ -76,6 +77,7 @@ public class RPiMonActivity extends Activity implements PeerListListener {
         private WifiP2pManager manager;
         private Channel channel;
         private WifiP2pConfig config;
+        private WifiP2pDevice leRaspberry;
         
         private SurfaceView surfaceView;
 		private SurfaceHolder surfaceHolder;
@@ -95,6 +97,7 @@ public class RPiMonActivity extends Activity implements PeerListListener {
         
         btn_1 = findViewById(R.id.btn_1);
         txt_conn = findViewById(R.id.txt_conn);
+        txt_conn.setTextColor(Color.LTGRAY);
         
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_STATE_CHANGED_ACTION);
         intentFilter.addAction(WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION);
@@ -121,17 +124,14 @@ public class RPiMonActivity extends Activity implements PeerListListener {
         receiver = new P2pBroadcastReceiver(manager, channel, this);
         registerReceiver(receiver, intentFilter);
         
-        Log.d(TAG, "onResume"); 
+        txt_conn.setTextColor(Color.LTGRAY);
+        
+        Log.d(TAG, "onResume: on lance discoverPeers"); 
         manager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
                     @Override
-                    public void onSuccess() {
-                       
-                    }
-
+                    public void onSuccess() {}
                     @Override
-                    public void onFailure(int reasonCode) {
-                        
-                    }
+                    public void onFailure(int reasonCode) {}
                 });
         
     }
@@ -146,42 +146,37 @@ public class RPiMonActivity extends Activity implements PeerListListener {
 
 	@Override
     public void onPeersAvailable(WifiP2pDeviceList peerList) {
-        //sans android.permission.ACCESS_FINE_LOCATION au runtime (pas manifest only), la WifiP2pDeviceList est vide
-        //Log.d(TAG, "onPeersAvailable dans P2P_wifi activity et la liste = " + peerList.toString());//plusieurs infos pas seulement MACADDR
         
-        /**
-         * Au début je récupérais par mac addr, et il fallait que je vérifie si null ET le status:
-         * WifiP2pDevice monPeerDevice = peerList.get("ba:27:eb:92:fc:8f"); //zero
-         * if (monPeerDevice != null && monPeerDevice.status == 3) { //sans check du status je passe 200x/s ici (et donc dans manager.connect()) et ça fait planter connexion
-         * 
-         * Depuis mars 2022 je cherche le peer par deviceName dans la WifiP2pDeviceList que j'iterate avec getDeviceList().
-         * Pour attribuer le name côté linux c'est: wpa_supplicant.conf: syntaxe: device_name=Zero
-         * 
-         * */
-		
-        for (WifiP2pDevice monPeerDevice : peerList.getDeviceList()) {			
-			//Log.d(TAG, "name:" + monPeerDevice.deviceName);
-			
-			if (monPeerDevice.deviceName.equals("Zero")) {
-			config = new WifiP2pConfig();
-			config.deviceAddress = monPeerDevice.deviceAddress;
-			config.wps.setup = WpsInfo.PBC;
-				manager.connect(channel, config, new ActionListener() {
-		            @Override
-		            public void onSuccess() { //pas informatif sur le statut de la connexion
-						//Log.d(TAG, "connect() --> onSuccess");
-		                //Toast.makeText(P2P_wifi.this, "connect() --> onSuccess", Toast.LENGTH_SHORT).show();
-		            }
-		
-		            @Override
-		            public void onFailure(int reason) { //pas informatif sur le statut de la connexion
-						//Log.d(TAG, "connect() --> onFailure, reason: " + reason);
-						//Toast.makeText(P2P_wifi.this, "connect() --> onFailure, reason: " + reason, Toast.LENGTH_SHORT).show();
-		            }
-				});	
-			}
-		}  
+        for (WifiP2pDevice unPeer : peerList.getDeviceList()) {			
+
+			if (unPeer.deviceName.equals("Zero") && unPeer.status == 3) {	
+				//Log.d(TAG, "Dans la peerList on a un Zero avec status = " + unPeer.status);
+				
+				if (leRaspberry == null) {
+					//Log.d(TAG, "Première fois qu on voit le raspberry, on configure connexion");
+					leRaspberry = unPeer;
+					config = new WifiP2pConfig();
+					config.deviceAddress = leRaspberry.deviceAddress;
+					config.wps.setup = WpsInfo.PBC;
+					} 
+				
+				Connect();				
+				}		
+		}
+
+
     }
+    
+    public void Connect() {
+		//Log.d(TAG, "On lance un manager.connect()");
+		manager.connect(channel, config, new ActionListener() {
+		            @Override
+		            public void onSuccess() {}		
+		            @Override
+		            public void onFailure(int reason) {}
+				});	
+	}
+    
     
     public void rxGroupFormed() {
 		//Log.d(TAG, "rxGroupFormed dans Main Activity");
