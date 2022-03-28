@@ -4,7 +4,7 @@ adb install out/target/product/generic_arm64/system/app/RPiMon/RPiMon.apk && \
 adb shell pm grant vvnx.rpimon android.permission.ACCESS_FINE_LOCATION
  * 
  * #stream servi en rtsp
- * test-launch "( rpicamsrc bitrate=2000000 keyframe-interval=15 ! video/x-h264,framerate=15/1,width=640,height=480 ! h264parse ! rtph264pay name=pay0 pt=96 )" &
+ * test-launch "( rpicamsrc bitrate=2000000 keyframe-interval=15 vflip=true hflip=true ! video/x-h264,framerate=15/1,width=640,height=480 ! h264parse ! rtph264pay name=pay0 pt=96 )" &
  * 
  * #listen sur un port avec socat
  * socat TCP-LISTEN:4696,fork EXEC:/root/myscript.sh & 
@@ -12,7 +12,7 @@ adb shell pm grant vvnx.rpimon android.permission.ACCESS_FINE_LOCATION
  * #myscript.sh
  * #!/bin/sh
 
-STDIN=$(cat) #Recuperation du message envoye par l emetteur
+STDIN=$(cat) #Recuperation du message envoye par l emetteur (path absolues obligatoires attention)
 
 case "$STDIN" in
  start)
@@ -23,6 +23,7 @@ case "$STDIN" in
     ;;
  stop)
     kill -s SIGINT `pidof gst-launch-1.0`
+    poweroff
     ;;  
  *)
     echo $STDIN >> /root/LOG_Rx
