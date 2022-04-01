@@ -6,8 +6,8 @@ adb shell pm grant vvnx.rpimon android.permission.ACCESS_FINE_LOCATION
  * #stream servi en rtsp
  * test-launch "( rpicamsrc bitrate=2000000 keyframe-interval=15 vflip=true hflip=true ! video/x-h264,framerate=15/1,width=640,height=480 ! h264parse ! rtph264pay name=pay0 pt=96 )" &
  * 
- * #listen sur un port avec socat (les scripts bash dont celui ci dans le dir bash/ de ce repo)
- * socat TCP-LISTEN:4696,fork EXEC:/root/rpimon.sh & 
+ * #listen sur un port avec socat (les scripts bash comme celui ci -rpimon.sh- sont dans le dir bash/ de ce repo)
+ * socat -t 10 TCP-LISTEN:4696,fork EXEC:/root/rpimon.sh &
  *  
  * 
  * */
