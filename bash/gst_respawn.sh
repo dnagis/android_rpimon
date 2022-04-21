@@ -3,7 +3,7 @@
 #lancement gst-launch-1.0 wrappe dans une enveloppe de respawn crash-proof
 
 #ts --> mp4
-#gst-launch-1.0 filesrc location=capture-08-22-12.ts ! tsdemux ! h264parse ! mp4mux ! filesink location=out.mp4
+#gst-launch-1.0 filesrc location=`ls capture*.ts` ! tsdemux ! h264parse ! mp4mux ! filesink location=out.mp4
 #
 #gst-play-1.0 --videosink vaapisink out.mp4
 
